@@ -44,3 +44,23 @@ def parse_user_timestamp(ts_str: str) -> datetime:
         except ValueError:
             continue
     raise ValueError(f"Unrecognized timestamp format: '{ts_str}'")
+
+
+def is_line_in_range(
+    line: str,
+    start: Optional[datetime],
+    end: Optional[datetime],
+) -> Optional[bool]:
+    """Check whether a log line's timestamp falls within [start, end].
+
+    Returns True if within range, False if outside, or None if no timestamp
+    could be extracted from the line.
+    """
+    ts = extract_timestamp(line)
+    if ts is None:
+        return None
+    if start is not None and ts < start:
+        return False
+    if end is not None and ts > end:
+        return False
+    return True
