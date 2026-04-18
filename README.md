@@ -32,6 +32,9 @@ cat app.log | logslice --start "2024-01-15 10:00:00" --end "2024-01-15 11:00:00"
 
 # Output to file
 logslice --start "2024-01-15 10:00:00" --end "2024-01-15 10:30:00" app.log -o slice.log
+
+# Show line numbers in output
+logslice --start "2024-01-15 10:00:00" --end "2024-01-15 10:30:00" --line-numbers app.log
 ```
 
 ### Options
@@ -42,7 +45,9 @@ logslice --start "2024-01-15 10:00:00" --end "2024-01-15 10:30:00" app.log -o sl
 | `--end` | End timestamp or pattern |
 | `--pattern` | Regex pattern to match log lines |
 | `--format` | Log timestamp format (default: auto-detect) |
+| `--line-numbers` | Prefix each output line with its original line number |
 | `-o, --output` | Write output to file instead of stdout |
+| `-q, --quiet` | Suppress warnings and info messages |
 
 ---
 
