@@ -64,3 +64,16 @@ def is_line_in_range(
     if end is not None and ts > end:
         return False
     return True
+
+
+def find_first_timestamp(lines: list[str]) -> Optional[datetime]:
+    """Return the first extractable timestamp found across a list of log lines.
+
+    Useful for inferring the time range covered by a log file without scanning
+    every line.
+    """
+    for line in lines:
+        ts = extract_timestamp(line)
+        if ts is not None:
+            return ts
+    return None
