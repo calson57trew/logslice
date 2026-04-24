@@ -41,6 +41,13 @@ def apply_pagination(
         raise ValueError("--page must be >= 1")
 
     total = len(lines)
+    total_pages = page_count(total, page_size)
+    if page > total_pages:
+        raise ValueError(
+            f"--page {page} is out of range: only {total_pages} page(s) available "
+            f"for {total} lines with page-size {page_size}"
+        )
+
     result = paginate_lines(lines, page_size=page_size, page=page)
 
     if verbose:
