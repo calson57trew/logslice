@@ -41,6 +41,14 @@ def test_highlight_level_case_insensitive():
     assert ANSI_RESET in result
 
 
+def test_highlight_level_preserves_surrounding_text():
+    """Ensure text around the matched level keyword is not lost after highlighting."""
+    line = "2024-01-01 ERROR something went wrong"
+    result = highlight_level(line)
+    assert "2024-01-01" in result
+    assert "something went wrong" in result
+
+
 def test_highlight_pattern_basic():
     line = "connected to host-42 successfully"
     result = highlight_pattern(line, r"host-\d+")
@@ -58,6 +66,13 @@ def test_highlight_pattern_invalid_regex():
     line = "some log line"
     result = highlight_pattern(line, r"[invalid")
     assert result == line
+
+
+def test_highlight_pattern_multiple_matches():
+    """All occurrences of the pattern in a line should be highlighted."""
+    line = "id=1 and id=2 processed"
+    result = highlight_pattern(line, r"id=\d+")
+    assert result.count(ANSI_RESET) >= 2
 
 
 def test_highlight_lines_levels_only():
