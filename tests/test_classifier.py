@@ -49,6 +49,12 @@ def test_classify_line_multi_returns_all_matches():
     assert "critical" in result
 
 
+def test_classify_line_empty_string_returns_default(rules):
+    """An empty line should fall back to the default classification."""
+    result = classify_line("", rules)
+    assert result == ["unclassified"]
+
+
 def test_classify_lines_no_tag_passthrough(rules):
     lines = ["INFO startup\n", "ERROR boom\n"]
     result = list(classify_lines(lines, rules, tag=False))
@@ -68,12 +74,25 @@ def test_classify_lines_tag_unclassified(rules):
     assert result[0].startswith("[unclassified] ")
 
 
+def test_classify_lines_preserves_line_content(rules):
+    """Tagged lines should retain the original line content after the tag prefix."""
+    line = "ERROR something went wrong\n"
+    result = list(classify_lines([line], rules, tag=True))
+    assert result[0] == "[error] ERROR something went wrong\n"
+
+
 def test_count_classified(rules):
     lines = ["ERROR a\n", "ERROR b\n", "INFO c\n", "nothing\n"]
     counts = count_classified(lines, rules)
     assert counts["error"] == 2
     assert counts["info"] == 1
     assert counts["unclassified"] == 1
+
+
+def test_count_classified_empty_input(rules):
+    """count_classified on an empty sequence should return an empty mapping."""
+    counts = count_classified([], rules)
+    assert len(counts) == 0
 
 
 def test_builtin_rules_match_common_levels():
