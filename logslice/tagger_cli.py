@@ -36,17 +36,28 @@ def add_tag_args(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _parse_tag_entry(entry: str) -> tuple:
+    """Parse a single PATTERN=LABEL string into a (pattern, label) tuple.
+
+    Raises ValueError if the entry does not contain an '=' separator or if
+    either the pattern or label component is empty.
+    """
+    if "=" not in entry:
+        raise ValueError(f"--tag value must be PATTERN=LABEL, got: {entry!r}")
+    pattern, _, label = entry.partition("=")
+    if not pattern:
+        raise ValueError(f"--tag pattern must not be empty, got: {entry!r}")
+    if not label:
+        raise ValueError(f"--tag label must not be empty, got: {entry!r}")
+    return pattern, label
+
+
 def apply_tagging(args: argparse.Namespace, lines: List[str]) -> List[str]:
     """Apply tagging to lines based on parsed CLI args. Returns processed lines."""
     if not args.tags:
         return lines
 
-    rules_raw = []
-    for entry in args.tags:
-        if "=" not in entry:
-            raise ValueError(f"--tag value must be PATTERN=LABEL, got: {entry!r}")
-        pattern, _, label = entry.partition("=")
-        rules_raw.append((pattern, label))
+    rules_raw = [_parse_tag_entry(entry) for entry in args.tags]
 
     rules = compile_tag_rules(rules_raw)
     result = list(
